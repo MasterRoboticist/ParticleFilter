@@ -8,6 +8,7 @@ public class Robot {
 	public double angle; // in rad
 	public Chassis chassis;
 	public Sensor[] sensors;
+	public double[] sensorReadings;
 	
 	
 	public Robot(double x, double y, double angle, Chassis chassis, Sensor[] sensors) {
@@ -15,6 +16,7 @@ public class Robot {
 		this.sensors = sensors;
 		position = new Vector(x, y);
 		this.angle = angle;
+		sensorReadings = getAllSensorReadings();
 	}
 
 	/**
@@ -46,5 +48,25 @@ public class Robot {
 	
 	public double getY() {
 		return position.comps[1];
+	}
+	
+	/* for graphics */
+	public double getSensorReading() {
+		if(sensors.length > 1) {
+			System.out.println("Warning: Calling 'getSensorReading()' is ambiguous.  Multiple sensors available.");
+		}
+		return getSensorReadings(0);
+	}
+	
+	public double getSensorReadings(int sensornum) {
+		return sensors[sensornum].read();
+	}
+	
+	public double[] getAllSensorReadings() {
+		double[] readings = new double[sensors.length];
+		for(int i = 0; i < sensors.length; i++) {
+			readings[i] = sensors[i].read();
+		}
+		return readings;
 	}
 }

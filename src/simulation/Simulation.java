@@ -12,6 +12,11 @@ public class Simulation {
 	
 	public final double robotGridWidth, robotGridHeight;
 	public final double wallGridSquareLength;
+	public int nbots;
+	
+	private Robot trueBot;
+	private ArrayList<Robot> simBots;
+	private boolean[][] grid;
 	
 	public Simulation(boolean[][] grid, int nbots, double robotGridWidth) {
 		simBots = new ArrayList<>(nbots);
@@ -33,9 +38,11 @@ public class Simulation {
 		scatter();
 	}
 	
-	private Robot trueBot;
-	private List<Robot> simBots;
-	private boolean[][] grid;
+	
+	
+	private Robot newSimBot() {
+		return new Robot();
+	}
 	
 	/**
 	 * Scatters the simulated bots.
@@ -56,23 +63,21 @@ public class Simulation {
 		r.setPosition(x, y);
 	}
 	
+	/**
+	 * redistributes the location of the bots according to how likely a position is to be correct
+	 */
 	public void redistribute() {
 		
 	}
 	
-	public double[] shootAllLasers(Robot r) {
-		
+	public double[][] readSensors() {
+		double[][] readings = new double[simBots.size()][trueBot.sensors.length];
+		for(int i = 0; i < simBots.size(); i++) {
+			readings[i] = simBots.get(i).getAllSensorReadings();
+		}
+		return readings;
 	}
 	
-	/**
-	 * Determines the distance between the position and the nearest wall in the given direction. 
-	 * @param pos the position
-	 * @param angle the angle
-	 * @return the distance
-	 */
-	public double shootLaser(Vector pos, double angle) {
-		return 0;
-	}
 	
 	public boolean isWall(Vector robotPos) {
 		return !grid[(int) (robotPos.x() / this.wallGridSquareLength)][(int) (robotPos.y() / this.wallGridSquareLength)];
@@ -93,5 +98,33 @@ public class Simulation {
 			r.setPosition(oldPos);
 		}
 	}
+	
+	
+	/*Functions for graphics*/
+	
+	public int getNumSimBots() {
+		return nbots;
+	}
+	public void setNumSimBots(int num) {
+		nbots = num;
+		//remove robots if the number of bots has decreased
+		while(simBots.size() > nbots) {
+			simBots.remove(0);
+		}
+		//add bots if the number of bots has increased
+		while(simBots.size() < nbots) {
+			Robot bot = newSimBot();
+			randomizeLocation(bot);
+			simBots.add(bot);
+		}
+	}
+	
+	public ArrayList<Robot> getSimRobots() {
+		return simBots;
+	}
+	public Robot getRealRobot() {
+		return trueBot;
+	}
+	
 
 }
