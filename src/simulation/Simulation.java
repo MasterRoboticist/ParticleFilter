@@ -26,14 +26,15 @@ public class Simulation {
 	Map map;
 	Wheel[] realWheels = {new Wheel(realWheelDistrib, -wheelDist/2, 0), new Wheel(realWheelDistrib, wheelDist/2, 0)};
 	Wheel[] fakeWheels = {new Wheel(fakeWheelDistrib, -wheelDist/2, 0), new Wheel(fakeWheelDistrib, wheelDist/2, 0)};
-	Sensor[] realSensors = {new IRSensor(0, realSensorDistr, map)};
-	Sensor[] fakeSensors = {new IRSensor(0, fakeSensorDistr, map)};
-	
+	Sensor[] realSensors;
+	Sensor[] fakeSensors;
 	
 	
 	public Simulation(int nbots, Map map) {
 		simBots = new ArrayList<>(nbots);
 		this.map = map;
+		realSensors = new Sensor[] {new IRSensor(0, realSensorDistr, map)};
+		fakeSensors = new Sensor[] {new IRSensor(0, fakeSensorDistr, map)};
 		
 		// create the robots
 		trueBot = new Robot(0, 0, 0, new Chassis(realWheels), realSensors);
@@ -55,7 +56,7 @@ public class Simulation {
 	//Does this need 
 	public void step() {
 		if(moving) {
-			
+			// TODO
 		}
 		else {
 			redistribute();
@@ -186,6 +187,26 @@ public class Simulation {
 		return trueBot;
 	}
 	
+	// James added this
+	public Map getMap() {
+		return map;
+	}
 
+	
+	/**
+	 * Sets the velocity of the left wheel, in robot units.
+	 * @param vel ya
+	 */
+	public void setLeftWheelVel(double vel) {
+		// TODO
+	}
+	
+	/**
+	 * Sets the velocity of the right wheel, in robot units.
+	 * @param vel ya
+	 */
+	public void setRightWheelVel(double vel) {
+		// TODO
+	}
 
 }

@@ -1,6 +1,7 @@
 package robot;
 
-import util.Distribution;
+import java.awt.image.BufferedImage;
+
 import util.Vector;
 
 public class Robot {
@@ -68,5 +69,14 @@ public class Robot {
 			readings[i] = getSensorReadings(i);
 		}
 		return readings;
+	}
+	
+	/**
+	 * Returns the sprite representing this robot 
+	 * @return the sprite
+	 */
+	public BufferedImage getSprite() {
+		// TODO
+		return null;
 	}
 }
