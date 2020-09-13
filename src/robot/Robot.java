@@ -12,6 +12,7 @@ public class Robot {
 	public Sensor[] sensors;
 	public double[] sensorReadings;
 	
+	static BufferedImage sprite = ImageReader.readImage("rollerRobotStanding.png");
 	
 	public Robot(double x, double y, double angle, Chassis chassis, Sensor[] sensors) {
 		this.chassis = chassis;
@@ -77,6 +78,6 @@ public class Robot {
 	 * @return the sprite
 	 */
 	public BufferedImage getSprite() {
-		return ImageReader.readImage("rollerRobotStanding.png");
+		return sprite;
 	}
 }

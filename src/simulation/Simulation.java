@@ -13,8 +13,9 @@ import util.Vector;
 public class Simulation {
 	
 	public int nbots;
-	public boolean moving = true;
+	public int moves = 0;
 	double rvel = 0, lvel = 0;
+	int redistrStepSize = 1;
 	
 	private Robot trueBot;
 	private ArrayList<Robot> simBots;
@@ -56,11 +57,13 @@ public class Simulation {
 	
 	//Does this need 
 	public void step() {
-		if(moving) {
-			// TODO
+		if(moves < redistrStepSize) {
+			moveSims(.1);
+			moves++;
 		}
 		else {
 			redistribute();
+			moves = 0;
 		}
 	}
 	
@@ -79,8 +82,7 @@ public class Simulation {
 			y = Math.random() * map.robotGridWidth;
 			r.setPosition(x, y);
 		} while(!map.isWall(r.position));
-		
-		r.setPosition(x, y);
+		r.angle = Math.random() * 360;
 	}
 	
 	/**
@@ -89,6 +91,12 @@ public class Simulation {
 	public void redistribute() {
 		double[] probabilities = calcWeights();
 		double sumProbs = sum(probabilities);
+		
+		if(avg(probabilities) < 30) {
+			scatter();
+			return;
+		}
+		
 		Vector[] coords = new Vector[simBots.size()];
 		for(int i = 0; i < simBots.size(); i++) 
 			coords[i] = simBots.get(i).position.getCopy();
@@ -133,17 +141,15 @@ public class Simulation {
 		return readings;
 	}
 	
-	public void moveSims(double velL, double velR, double time, double dt) {
+	public void moveSims(double dt) {
 		for(Robot r: this.simBots) {
-			for(int i = 0; i < time/dt; i++) {
-				moveIt(r, velL, velR, dt);				
-			}
+			moveIt(r, dt);
 		}
 	}
 	
-	public void moveIt(Robot r, double velL, double velR, double dt) {
+	public void moveIt(Robot r, double dt) {
 		Vector oldPos = r.position.getCopy();
-		r.move(velL, velR, dt);
+		r.move(lvel, rvel, dt);
 		if(map.isWall(r.position)) {
 			r.setPosition(oldPos);
 		}
@@ -161,6 +167,21 @@ public class Simulation {
 		return sum(list)/list.length;
 	}
 	
+	public void summary() {
+		System.out.println("True Robot: ");
+		System.out.println("	Position: " + trueBot.position.toString());
+		System.out.println(String.format("	Angle: %.2f", trueBot.angle));
+		System.out.println(String.format("	Sensor Reading: %.03f", trueBot.getSensorReading()));
+		System.out.println("\n Simulated Robots: ");
+		System.out.println("	--");
+
+		for(Robot bot: simBots) {
+			System.out.println("	Position: " + bot.position.toString());
+			System.out.println(String.format("	Angle: %.2f", bot.angle));
+			System.out.println(String.format("	Sensor Reading: %.3f", bot.getSensorReading()));
+			System.out.println("	--");
+		}
+	}
 	
 	/*Functions for graphics*/
 	
@@ -208,6 +229,14 @@ public class Simulation {
 	 */
 	public void setRightWheelVel(double vel) {
 		rvel = vel;
+	}
+	
+	public void setScatterStepSize(int n) {
+		redistrStepSize = n;
+	}
+	
+	public int getScatterStepSize() {
+		return redistrStepSize;
 	}
 
 }

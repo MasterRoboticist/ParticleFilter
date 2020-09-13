@@ -19,7 +19,9 @@ public class IRSensor extends Sensor{
 		Vector endPos = pos.getCopy();
 		Vector dr = new Vector(Math.cos(angle) * DR, Math.sin(angle) * DR);
 
-		while (!map.isWall(endPos.plus(dr)));
+		while (!map.isWall(endPos.plus(dr))) {
+//			System.out.println(endPos);
+		}
 		return pos.distanceTo(endPos);
 	}
 

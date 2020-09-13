@@ -17,11 +17,13 @@ public class Main {
 		BufferedImage mapImage = ImageReader.readImage("logo.png");
 
 		
-		int robotGridWidth = 1000;
-		int nbots = 100;
+		double robotGridWidth = 1000;
+		int nbots = 10;
 		
 		Map map = new Map(mapImage.getWidth(), mapImage.getHeight(), robotGridWidth, mapImage);
 		Simulation sim = new Simulation(nbots, map);
+		
+		sim.summary();
 
 	}
 
