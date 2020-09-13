@@ -4,7 +4,7 @@ import util.Distribution;
 import util.Vector;
 
 public class Robot {
-	public final Vector position;
+	public Vector position;
 	public double angle; // in rad
 	public Chassis chassis;
 	public Sensor[] sensors;
@@ -59,13 +59,13 @@ public class Robot {
 	}
 	
 	public double getSensorReadings(int sensornum) {
-		return sensors[sensornum].read();
+		return sensors[sensornum].read(position, angle);
 	}
 	
 	public double[] getAllSensorReadings() {
 		double[] readings = new double[sensors.length];
 		for(int i = 0; i < sensors.length; i++) {
-			readings[i] = sensors[i].read();
+			readings[i] = getSensorReadings(i);
 		}
 		return readings;
 	}
