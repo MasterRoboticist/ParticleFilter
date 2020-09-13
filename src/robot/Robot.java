@@ -2,6 +2,7 @@ package robot;
 
 import java.awt.image.BufferedImage;
 
+import util.ImageReader;
 import util.Vector;
 
 public class Robot {
@@ -76,7 +77,6 @@ public class Robot {
 	 * @return the sprite
 	 */
 	public BufferedImage getSprite() {
-		// TODO
-		return null;
+		return ImageReader.readImage("rollerRobotStanding.png");
 	}
 }

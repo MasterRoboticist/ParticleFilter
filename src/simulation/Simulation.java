@@ -14,6 +14,7 @@ public class Simulation {
 	
 	public int nbots;
 	public boolean moving = true;
+	double rvel = 0, lvel = 0;
 	
 	private Robot trueBot;
 	private ArrayList<Robot> simBots;
@@ -198,7 +199,7 @@ public class Simulation {
 	 * @param vel ya
 	 */
 	public void setLeftWheelVel(double vel) {
-		// TODO
+		lvel = vel;
 	}
 	
 	/**
@@ -206,7 +207,7 @@ public class Simulation {
 	 * @param vel ya
 	 */
 	public void setRightWheelVel(double vel) {
-		// TODO
+		rvel = vel;
 	}
 
 }

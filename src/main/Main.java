@@ -20,7 +20,7 @@ public class Main {
 		int robotGridWidth = 1000;
 		int nbots = 100;
 		
-		Map map = new Map(robotGridWidth, mapImage);
+		Map map = new Map(mapImage.getWidth(), mapImage.getHeight(), robotGridWidth, mapImage);
 		Simulation sim = new Simulation(nbots, map);
 
 	}
