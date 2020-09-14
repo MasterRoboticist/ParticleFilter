@@ -45,7 +45,7 @@ public class Simulation {
 		}
 		
 		// scatter all the robots
-		randomizeLocation(trueBot);
+//		randomizeLocation(trueBot);
 		scatter();
 	}
 	
@@ -79,10 +79,10 @@ public class Simulation {
 		double x, y;
 		do {
 			x = Math.random() * map.robotGridWidth;
-			y = Math.random() * map.robotGridWidth;
+			y = Math.random() * map.robotGridHeight;
 			r.setPosition(x, y);
-		} while(!map.isWall(r.position));
-		r.angle = Math.random() * 360;
+		} while(map.isWall(r.position));
+		r.angle = Math.random() * 2*Math.PI;
 	}
 	
 	/**

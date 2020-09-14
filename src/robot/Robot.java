@@ -10,7 +10,7 @@ public class Robot {
 	public double angle; // in rad
 	public Chassis chassis;
 	public Sensor[] sensors;
-	public double[] sensorReadings;
+//	public double[] sensorReadings;
 	
 	static BufferedImage sprite = ImageReader.readImage("rollerRobotStanding.png");
 	
@@ -19,7 +19,7 @@ public class Robot {
 		this.sensors = sensors;
 		position = new Vector(x, y);
 		this.angle = angle;
-		sensorReadings = getAllSensorReadings();
+//		sensorReadings = getAllSensorReadings();
 	}
 
 	/**
@@ -62,7 +62,9 @@ public class Robot {
 	}
 	
 	public double getSensorReadings(int sensornum) {
-		return sensors[sensornum].read(position, angle);
+		double r = sensors[sensornum].read(position, angle);
+		System.out.println(r);
+		return r;
 	}
 	
 	public double[] getAllSensorReadings() {

@@ -28,10 +28,11 @@ public class Map {
 		
 		this.robotGridWidth = robotGridWidth;
 		wallGridSquareLength = robotGridWidth/obstacleMap.length;
-		System.out.println(wallGridSquareLength);
+//		System.out.println(wallGridSquareLength);
 		System.out.println(obstacleMap.length);
+		System.out.println(obstacleMap[0].length);
 		this.robotGridHeight = this.wallGridSquareLength * obstacleMap[0].length;
-		System.out.println(robotGridHeight);
+//		System.out.println(robotGridHeight);
 	}
 
 	public static boolean[][] makeObstacleMap(BufferedImage img){
@@ -41,41 +42,18 @@ public class Map {
 			for(int y = 0; y < img.getHeight(); y++) {
 				
 				obstacleMap[x][y] = (img.getRGB(x, y) & 0x00ffffff) > 0 || (img.getRGB(x,y) & 0xff000000) == 0;
-//				if((img.getRGB(x, y)) == 0) {
-//					System.out.println(Integer.toHexString(img.getRGB(x, y)));
-//					System.out.println(obstacleMap[x][y]);
-//				}
-				
 			}
 		}
-		
-		//make png of obstacle map
-//		BufferedImage outImage = new BufferedImage(obstacleMap.length, obstacleMap[0].length,
-//                BufferedImage.TYPE_INT_RGB);
-//        for (int i = 0; i < obstacleMap[0].length; i++) {
-//            for (int j = 0; j < obstacleMap.length; j++) {
-//                if (obstacleMap[j][i]) {
-//                    outImage.setRGB (j, i, 0xffffffff);
-//                } else {
-//                    outImage.setRGB (j, i, 0x00000000);
-//                }
-//            }
-//        }
-//        try {
-//            // Save as PNG
-//            File file = new File("outimage.png");
-//            ImageIO.write(outImage, "png", file);
-//        } catch (IOException e) {}
-//		
+			
 		return obstacleMap;
 	}
 	
 	public boolean isWall(Vector pos) {
 		pos = this.robotPos2ObstacleMap(pos);
 		try {
-			boolean b = !obstacleMap[(int)pos.x()][(int)pos.y()];
-			return false;
-//			return !obstacleMap[(int)pos.x()][(int)pos.y()];
+//			System.out.println(obstacleMap[(int)pos.x()][(int)pos.y()]);
+//			return false;
+			return !obstacleMap[(int)pos.x()][(int)pos.y()];
 		} catch (ArrayIndexOutOfBoundsException e) {
 			System.out.println("out of bounds");
 			return true;
