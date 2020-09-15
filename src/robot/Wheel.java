@@ -14,7 +14,7 @@ public class Wheel {
 	public final Vector position;
 
 	public double spin(double d) {
-		return distr.generateRand();
+		return d + distr.generateRand();
 	}
 
 }

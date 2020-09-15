@@ -111,4 +111,8 @@ public class Vector {
 		return new Vector(Math.cos(angle), Math.sin(angle));
 	}
 	
+	public boolean equals(Vector v) {
+		return v.x() == x() && v.y() == y();
+	}
+	
 }

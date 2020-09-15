@@ -51,11 +51,8 @@ public class Map {
 	public boolean isWall(Vector pos) {
 		pos = this.robotPos2ObstacleMap(pos);
 		try {
-//			System.out.println(obstacleMap[(int)pos.x()][(int)pos.y()]);
-//			return false;
 			return !obstacleMap[(int)pos.x()][(int)pos.y()];
 		} catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println("out of bounds");
 			return true;
 		}
 	}
