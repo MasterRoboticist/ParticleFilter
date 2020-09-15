@@ -17,9 +17,10 @@ public class App {
 	}
 	
 	public static final int width = 600, height = 500;
+	public static final String title = "Particle Filter";
 	
 	public App() {
-		frame = new JFrame("Particle Filter");
+		frame = new JFrame(title);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new GridBagLayout());
 		
@@ -29,20 +30,25 @@ public class App {
 		int robotGridWidth = 1000;
 		int nbots = 100;
 		
-		Map map = new Map(mapImage.getWidth(), mapImage.getHeight(), robotGridWidth, mapImage);
-		Simulation sim = new Simulation(nbots, map);
+		map = new Map(mapImage.getWidth(), mapImage.getHeight(), robotGridWidth, mapImage);
+		sim = new Simulation(nbots, map);
 		
-		// make components
+		// make panels
 		simPanel = new SimPanel(sim);
+		controlPanel = new ControlPanel(this);
 		
-		// add components
+		// add panels
 		GBC.addComp(frame::add, 0, 0, simPanel, new GBC().fill(GBC.BOTH).weight(1, 1));
+		GBC.addComp(frame::add, 1, 0, controlPanel, new GBC().fill(GBC.BOTH));
 		
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 	
+	final Map map;
+	final Simulation sim;
 	private final JFrame frame;
-	private final SimPanel simPanel;
+	final SimPanel simPanel;
+	final ControlPanel controlPanel;
 }

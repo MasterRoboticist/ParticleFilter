@@ -286,7 +286,7 @@ public class Simulation {
 	/*Functions for graphics*/
 	
 	public int getNumSimBots() {
-		return nbots;
+		return simBots.size();
 	}
 	public void setNumSimBots(int num) {
 		nbots = num;

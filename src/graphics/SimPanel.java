@@ -54,15 +54,17 @@ public class SimPanel extends JPanel {
 	}
 	
 	public void renderRobotsAt(Graphics2D g, Point loc, Dimension size, Robot... bots) {
+		System.out.println(bots.length);
 		g = (Graphics2D) g.create();
 		g.transform(getTransform(loc, size));
 		for (Robot bot : bots) {
 			Point botloc = sim.getMap().robotPos2Pixel(bot.position);
 			BufferedImage sprite = bot.getSprite();
 			AffineTransform tx = AffineTransform.getRotateInstance(bot.angle, sprite.getWidth()/2, sprite.getHeight()/2);
+//			tx.scale(.1, .1); // TODO maybe don't scale
 			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 			var rotatedSprite = op.filter(sprite, null);
-			g.drawImage(rotatedSprite, botloc.x - rotatedSprite.getWidth()/2, botloc.y - rotatedSprite.getHeight()/2, null);
+			g.drawImage(rotatedSprite, new AffineTransform(.2, 0, 0, .2, botloc.x - rotatedSprite.getWidth()/2, botloc.y - rotatedSprite.getHeight()/2), null);
 		}
 	}
 	
