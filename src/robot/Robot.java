@@ -15,7 +15,7 @@ public class Robot {
 	double lastAngle;
 	
 	
-	static BufferedImage simSprite = ImageReader.readImage("rollerRobotStanding.png");
+	static BufferedImage simSprite = ImageReader.readImage("pixelBot.png");
 	static BufferedImage trueSprite = ImageReader.readImage("rollerRobotStandingRed.png");
 	BufferedImage sprite = simSprite;
 	

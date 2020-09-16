@@ -1,5 +1,6 @@
 package graphics;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -12,6 +13,7 @@ import javax.swing.JPanel;
 
 import robot.Robot;
 import simulation.Simulation;
+import util.ArrayIter;
 
 @SuppressWarnings("serial")
 public class SimPanel extends JPanel {
@@ -20,10 +22,12 @@ public class SimPanel extends JPanel {
 
 	public SimPanel(Simulation sim) {
 		setPreferredSize(new Dimension(width, height));
+		setFocusable(true);
 		
 		this.sim = sim;
 	}
 	
+	private boolean lazyDraw = true; // controls whether simbots are drawn as images or points
 	private final Simulation sim;
 	
 	@Override
@@ -37,7 +41,12 @@ public class SimPanel extends JPanel {
 		allBots[allBots.length-1] =  sim.getRealRobot();
 		
 		renderMapAt(g2, loc, size);
-		renderRobotsAt(g2, loc, size, allBots);
+		renderRobotsAt(g2, loc, size, new ArrayIter<>(sim.getRealRobot()));
+		if (lazyDraw) {
+			lazyRenderRobotsAt(g2, loc, size, sim.getSimRobots());
+		} else {
+			renderRobotsAt(g2, loc, size, sim.getSimRobots());
+		}
 	}
 	
 	
@@ -53,7 +62,18 @@ public class SimPanel extends JPanel {
 		g.drawImage(sim.getMap().img, getTransform(loc, size), null);
 	}
 	
-	public void renderRobotsAt(Graphics2D g, Point loc, Dimension size, Robot... bots) {
+	public void lazyRenderRobotsAt(Graphics2D g, Point loc, Dimension size, Iterable<Robot> bots) {
+		g = (Graphics2D) g.create();
+		g.transform(getTransform(loc, size));
+		g.setColor(Color.GRAY);
+		int diam = 9;
+		for (Robot bot : bots) {
+			Point botloc = sim.getMap().robotPos2Pixel(bot.position);
+			g.fillOval(botloc.x - diam/2, botloc.y - diam/2, diam, diam);
+		}
+	}
+	
+	public void renderRobotsAt(Graphics2D g, Point loc, Dimension size, Iterable<Robot> bots) {
 		g = (Graphics2D) g.create();
 		g.transform(getTransform(loc, size));
 		for (Robot bot : bots) {
@@ -61,15 +81,11 @@ public class SimPanel extends JPanel {
 			BufferedImage sprite = bot.getSprite();
 			double spriteOrientation = 3*Math.PI/2;
 			AffineTransform tx = AffineTransform.getRotateInstance(bot.angle + spriteOrientation, sprite.getWidth()/2, sprite.getHeight()/2);
-//			tx.scale(.1, .1); // TODO maybe don't scale
-			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 			var rotatedSprite = op.filter(sprite, null);
-			double desiredBotSize = size.getWidth()/20;
-			double scale = size.getWidth()/sim.getMap().img.getWidth()*desiredBotSize;
+			double desiredBotSize = size.getWidth() / 40.0; // not quite right name
+			double scale = 1.0 * sprite.getWidth() / sim.getMap().img.getWidth() * desiredBotSize;
 			g.drawImage(rotatedSprite, new AffineTransform(1/scale, 0, 0, 1/scale, botloc.x - rotatedSprite.getWidth()/scale/2, botloc.y - rotatedSprite.getHeight()/scale/2), null);
-			//changed above line to below line because robots weren't getting near edges and this seemed to be the problem
-			//TODO: why do you have to divide by 10?
-//			g.drawImage(rotatedSprite, new AffineTransform(.2, 0, 0, .2, botloc.x, botloc.y), null);
 		}
 	}
 	

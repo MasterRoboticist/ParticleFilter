@@ -1,8 +1,6 @@
 package simulation;
 
 import java.util.ArrayList;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 
 import robot.Chassis;
 import robot.IRSensor;
@@ -17,18 +15,20 @@ public class Simulation {
 	public int nbots;
 	public int moves = 1;
 	double rvel = 0, lvel = 0;
+	int rOn = 1, lOn = 1;  // can be 0(off), 1 (on), or -1 (reverse)
 	int redistrStepSize = 2;
-	double dt = 1; //seconds
+	private double dt = 1; //seconds
 	int rescatterMin = 20; //minimum number of steps between rescatterings
 	int lastScatter = 0;
 	
 	private Robot trueBot;
 	private ArrayList<Robot> simBots;
 	
-	Gaussian realWheelDistrib = new Gaussian(0, 0.0001);
-	Gaussian fakeWheelDistrib = new Gaussian(0, 2);
-	Gaussian realSensorDistr = new Gaussian(0, 5);
-	Gaussian fakeSensorDistr = new Gaussian(0, 10);
+	public static final Gaussian realWheelDistrib = new Gaussian(0, 0.0001);
+	public static final Gaussian fakeWheelDistrib = new Gaussian(0, 2);
+	public static final Gaussian realSensorDistr = new Gaussian(0, 5);
+	public static final Gaussian fakeSensorDistr = new Gaussian(0, 10);
+	
 	double wheelDist = 10;
 	Map map;
 	Wheel[] realWheels = {new Wheel(realWheelDistrib, -wheelDist/2, 0), new Wheel(realWheelDistrib, wheelDist/2, 0)};
@@ -95,7 +95,7 @@ public class Simulation {
 			r.setPosition(x, y);
 		} while(map.isWall(r.position));
 		r.angle = Math.random() * 2*Math.PI;
-		System.out.println(map.robotPos2ObstacleMap(r.position).toString());
+//		System.out.println(map.robotPos2ObstacleMap(r.position).toString());
 	}
 	
 	/**
@@ -212,7 +212,7 @@ public class Simulation {
 	
 	public void moveIt(Robot r, double dt) {
 		Vector oldPos = r.position.getCopy();
-		r.move(lvel, rvel, dt);
+		r.move(lOn * lvel, rOn * rvel, dt);
 		if(map.isWall(r.position)) {
 			r.setPosition(oldPos);
 		}
@@ -334,6 +334,12 @@ public class Simulation {
 	public void setRightWheelVel(double vel) {
 		rvel = vel;
 	}
+	public void setRightWheelOn(int on) {
+		rOn = on;
+	}
+	public void setLeftWheelOn(int on) {
+		lOn = on;
+	}
 	
 	public void setScatterStepSize(int n) {
 		redistrStepSize = n;
@@ -341,6 +347,10 @@ public class Simulation {
 	
 	public int getScatterStepSize() {
 		return redistrStepSize;
+	}
+	
+	public void setDT(double dt) {
+		this.dt = dt;
 	}
 
 }
