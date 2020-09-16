@@ -13,12 +13,18 @@ public class Gaussian implements Distribution {
 	
 	
 	public double generateRand() {
+		if (stdDev == 0) {
+			return center;
+		}
 		return center + stdDev * random.nextGaussian();
 	}
 
 
 	@Override
 	public double getProbability(double outputNum, double idealNum) {
+		if(stdDev == 0) {
+			return outputNum == idealNum ? 1 : 0;
+		}
 		double standardNormalNum = ((outputNum-idealNum)/stdDev);
 		double r = 2*CNDF(- Math.abs(standardNormalNum));
 		if(r >= 1 && standardNormalNum != 0) {

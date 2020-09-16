@@ -14,14 +14,21 @@ public class Robot {
 	Vector lastPos;
 	double lastAngle;
 	
-	static BufferedImage sprite = ImageReader.readImage("rollerRobotStanding.png");
+	
+	static BufferedImage simSprite = ImageReader.readImage("rollerRobotStanding.png");
+	static BufferedImage trueSprite = ImageReader.readImage("rollerRobotStandingRed.png");
+	BufferedImage sprite = simSprite;
+	
 	
 	public Robot(double x, double y, double angle, Chassis chassis, Sensor[] sensors) {
 		this.chassis = chassis;
 		this.sensors = sensors;
 		position = new Vector(x, y);
 		this.angle = angle;
-//		sensorReadings = getAllSensorReadings();
+	}
+	
+	public void setToRealBotSprite() {
+		sprite = trueSprite;
 	}
 
 	/**
@@ -30,7 +37,12 @@ public class Robot {
 	 */
 	public void move(double leftWheelVel, double rightWheelVel, double dt) {
 		double[] changeInPos = chassis.drive(new double[] {leftWheelVel, rightWheelVel}, dt);
+		Vector oldPos = position.getCopy();
 		position.plus(new Vector(changeInPos[0], changeInPos[1]).rotate(angle));
+		if(sensors[0].map.isWall(position)) {
+			double maxPosChange = sensors[0].map.apprDistToWall(position, angle, .3);
+			position = oldPos.plus(new Vector(maxPosChange*Math.cos(angle), maxPosChange*Math.sin(angle)));
+		}
 		angle += changeInPos[2];
 		angle %= 2*Math.PI;
 		
@@ -65,8 +77,11 @@ public class Robot {
 	}
 	
 	public double getSensorReadings(int sensornum) {
-		if(sensorReadings == null || !(lastPos.equals(position) && angle == lastAngle))
+		if(sensorReadings == null || !(lastPos.equals(position) && angle == lastAngle)) {
+			lastPos = position.getCopy();
+			lastAngle = angle;
 			return sensors[sensornum].read(position, angle);
+		}
 		else return sensorReadings[sensornum];
 	}
 	

@@ -54,17 +54,22 @@ public class SimPanel extends JPanel {
 	}
 	
 	public void renderRobotsAt(Graphics2D g, Point loc, Dimension size, Robot... bots) {
-		System.out.println(bots.length);
 		g = (Graphics2D) g.create();
 		g.transform(getTransform(loc, size));
 		for (Robot bot : bots) {
 			Point botloc = sim.getMap().robotPos2Pixel(bot.position);
 			BufferedImage sprite = bot.getSprite();
-			AffineTransform tx = AffineTransform.getRotateInstance(bot.angle, sprite.getWidth()/2, sprite.getHeight()/2);
+			double spriteOrientation = 3*Math.PI/2;
+			AffineTransform tx = AffineTransform.getRotateInstance(bot.angle + spriteOrientation, sprite.getWidth()/2, sprite.getHeight()/2);
 //			tx.scale(.1, .1); // TODO maybe don't scale
 			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 			var rotatedSprite = op.filter(sprite, null);
-			g.drawImage(rotatedSprite, new AffineTransform(.2, 0, 0, .2, botloc.x - rotatedSprite.getWidth()/2, botloc.y - rotatedSprite.getHeight()/2), null);
+			double desiredBotSize = size.getWidth()/20;
+			double scale = size.getWidth()/sim.getMap().img.getWidth()*desiredBotSize;
+			g.drawImage(rotatedSprite, new AffineTransform(1/scale, 0, 0, 1/scale, botloc.x - rotatedSprite.getWidth()/scale/2, botloc.y - rotatedSprite.getHeight()/scale/2), null);
+			//changed above line to below line because robots weren't getting near edges and this seemed to be the problem
+			//TODO: why do you have to divide by 10?
+//			g.drawImage(rotatedSprite, new AffineTransform(.2, 0, 0, .2, botloc.x, botloc.y), null);
 		}
 	}
 	

@@ -21,8 +21,15 @@ public class ControlPanel extends JPanel {
 			app.simPanel.repaint();
 		});
 		
+		JButton scatterButton = new JButton("Scatter");
+		scatterButton.addActionListener((e) -> {
+			app.sim.scatter();
+			app.simPanel.repaint();
+		});
+		
 		// add components
 		GBC.addComp(this::add, 0, 0, stepButton, new GBC());
+		GBC.addComp(this::add, 0, 20, scatterButton, new GBC());
 	}
 	
 	private final App app;

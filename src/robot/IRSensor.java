@@ -22,15 +22,12 @@ public class IRSensor extends Sensor{
 			return lastReading;
 		}
 		
-		Vector endPos = pos.getCopy();
-		Vector dr = new Vector(Math.cos(angle) * DR, Math.sin(angle) * DR);
-
-		while (!map.isWall(endPos.plus(dr))) {
-//			System.out.println(endPos);
-		}
-		
-		lastReading = pos.distanceTo(endPos) + distr.generateRand();
+		lastReading = map.apprDistToWall(pos, angle, DR) + distr.generateRand();
 		lastReading = lastReading < 0 ? 0 : lastReading;
+		
+		lastPos = pos.getCopy();
+		
+		
 		return lastReading;
 	}
 

@@ -16,7 +16,7 @@ public class App {
 		new App();
 	}
 	
-	public static final int width = 600, height = 500;
+//	public static final int width = 600, height = 500;
 	public static final String title = "Particle Filter";
 	
 	public App() {
@@ -25,13 +25,15 @@ public class App {
 		frame.setLayout(new GridBagLayout());
 		
 		// make simulation stuff
-		BufferedImage mapImage = ImageReader.readImage("logo.png");
+		BufferedImage mapImage = ImageReader.readImage("logo.jpg");
 		
 		int robotGridWidth = 1000;
-		int nbots = 100;
+		int nbots = 1000;
 		
 		map = new Map(mapImage.getWidth(), mapImage.getHeight(), robotGridWidth, mapImage);
 		sim = new Simulation(nbots, map);
+		sim.setLeftWheelVel(10);
+		sim.setRightWheelVel(10);
 		
 		// make panels
 		simPanel = new SimPanel(sim);

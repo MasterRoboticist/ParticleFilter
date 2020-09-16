@@ -15,7 +15,7 @@ import util.Vector;
 public class Simulation {
 	
 	public int nbots;
-	public int moves = 0;
+	public int moves = 1;
 	double rvel = 0, lvel = 0;
 	int redistrStepSize = 2;
 	double dt = 1; //seconds
@@ -25,21 +25,22 @@ public class Simulation {
 	private Robot trueBot;
 	private ArrayList<Robot> simBots;
 	
-	Gaussian realWheelDistrib = new Gaussian(0, 1);
-	Gaussian fakeWheelDistrib = new Gaussian(0, 10);
+	Gaussian realWheelDistrib = new Gaussian(0, 0.0001);
+	Gaussian fakeWheelDistrib = new Gaussian(0, 2);
 	Gaussian realSensorDistr = new Gaussian(0, 5);
 	Gaussian fakeSensorDistr = new Gaussian(0, 10);
 	double wheelDist = 10;
 	Map map;
 	Wheel[] realWheels = {new Wheel(realWheelDistrib, -wheelDist/2, 0), new Wheel(realWheelDistrib, wheelDist/2, 0)};
 	Wheel[] fakeWheels = {new Wheel(fakeWheelDistrib, -wheelDist/2, 0), new Wheel(fakeWheelDistrib, wheelDist/2, 0)};
-	double[] irSensorAngles = {0,Math.PI/4, -Math.PI/4, Math.PI/2, -Math.PI/2};
+	double[] irSensorAngles = {0,Math.PI/8,Math.PI/4, Math.PI*3/4, Math.PI/2, -Math.PI/8, -Math.PI/4, -Math.PI*3/4, -Math.PI/2};
 	Sensor[] realSensors = new Sensor[irSensorAngles.length];
 	Sensor[] fakeSensors = new Sensor[irSensorAngles.length];
 	
 	
 	public Simulation(int nbots, Map map) {
 		simBots = new ArrayList<>(nbots);
+		this.nbots = nbots;
 		this.map = map;
 		for(int i = 0; i < irSensorAngles.length; i++) {
 			realSensors[i] = new IRSensor(irSensorAngles[i], realSensorDistr, map);
@@ -47,7 +48,8 @@ public class Simulation {
 		}
 		
 		// create the robots
-		trueBot = new Robot(1800, 0, Math.PI, new Chassis(realWheels), realSensors);
+		trueBot = new Robot(950, 315, Math.PI, new Chassis(realWheels), realSensors);
+		trueBot.setToRealBotSprite();
 		for(int i = 0; i < nbots; i++) {
 			simBots.add(newSimBot());
 		}
@@ -93,6 +95,7 @@ public class Simulation {
 			r.setPosition(x, y);
 		} while(map.isWall(r.position));
 		r.angle = Math.random() * 2*Math.PI;
+		System.out.println(map.robotPos2ObstacleMap(r.position).toString());
 	}
 	
 	/**
@@ -109,9 +112,9 @@ public class Simulation {
 			return;
 		}
 		
-		Vector[] coords = new Vector[simBots.size()];
-		double[] angles = new double[simBots.size()];
-		for(int i = 0; i < simBots.size(); i++) {
+		Vector[] coords = new Vector[nbots];
+		double[] angles = new double[nbots];
+		for(int i = 0; i < nbots; i++) {
 			coords[i] = simBots.get(i).position.getCopy();
 			angles[i] = simBots.get(i).angle;
 		}
@@ -175,9 +178,9 @@ public class Simulation {
 
 
 	private double[] calcWeights() {
-		double[] probs = new double[simBots.size()];
+		double[] probs = new double[nbots];
 		double[] trueReadings = trueBot.getAllSensorReadings();
-		for(int i = 0; i < simBots.size(); i++) {
+		for(int i = 0; i < nbots; i++) {
 			probs[i] = calcWeight(simBots.get(i), trueReadings);
 		}
 		return probs;
@@ -188,13 +191,14 @@ public class Simulation {
 		for(int i = 0; i < sensorReadings.length; i++) {
 			sum += bot.sensors[i].distr.getProbability(sensorReadings[i], bot.getSensorReadings(i));
 		}
-		return sum/(double)sensorReadings.length;
+		//Ensure has at least some chance of getting chosen, even if all probablities are 0
+		return 10*sum/(double)sensorReadings.length + 1;
 		
 	}
 	
 	public double[][] readSensors() {
-		double[][] readings = new double[simBots.size()][trueBot.sensors.length];
-		for(int i = 0; i < simBots.size(); i++) {
+		double[][] readings = new double[nbots][trueBot.sensors.length];
+		for(int i = 0; i < nbots; i++) {
 			readings[i] = simBots.get(i).getAllSensorReadings();
 		}
 		return readings;
@@ -237,7 +241,7 @@ public class Simulation {
 
 			double[] probabilities = calcWeights();
 
-			for(int i = 0; i < simBots.size(); i++) {
+			for(int i = 0; i < nbots; i++) {
 				Robot bot = simBots.get(i);
 				System.out.println("	Position: " + bot.position.toString());
 				System.out.println(String.format("	Angle: %.2f", bot.angle));
@@ -255,11 +259,11 @@ public class Simulation {
 			System.out.println("	--");
 
 			double[] probabilities = calcWeights();
-			double[] xpos = new double[simBots.size()];
-			double[] ypos = new double[simBots.size()];
-			double[] angle = new double[simBots.size()];
-			double[][] sensorReading = new double[simBots.size()][simBots.get(0).sensors.length];
-			for(int i = 0; i < simBots.size(); i++) {
+			double[] xpos = new double[nbots];
+			double[] ypos = new double[nbots];
+			double[] angle = new double[nbots];
+			double[][] sensorReading = new double[nbots][simBots.get(0).sensors.length];
+			for(int i = 0; i < nbots; i++) {
 				xpos[i] = simBots.get(i).position.x();
 				ypos[i] = simBots.get(i).position.y();
 				angle[i] = simBots.get(i).angle;
@@ -286,7 +290,7 @@ public class Simulation {
 	/*Functions for graphics*/
 	
 	public int getNumSimBots() {
-		return simBots.size();
+		return nbots;
 	}
 	public void setNumSimBots(int num) {
 		nbots = num;

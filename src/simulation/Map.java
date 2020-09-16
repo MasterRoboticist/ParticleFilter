@@ -26,13 +26,11 @@ public class Map {
 		
 		obstacleMap = makeObstacleMap(img);
 		
+		System.out.println("Map Size: " + img.getWidth() + "x" + img.getHeight());
+		
 		this.robotGridWidth = robotGridWidth;
 		wallGridSquareLength = robotGridWidth/obstacleMap.length;
-//		System.out.println(wallGridSquareLength);
-		System.out.println(obstacleMap.length);
-		System.out.println(obstacleMap[0].length);
 		this.robotGridHeight = this.wallGridSquareLength * obstacleMap[0].length;
-//		System.out.println(robotGridHeight);
 	}
 
 	public static boolean[][] makeObstacleMap(BufferedImage img){
@@ -41,7 +39,7 @@ public class Map {
 		for(int x = 0; x < img.getWidth(); x++) {
 			for(int y = 0; y < img.getHeight(); y++) {
 				
-				obstacleMap[x][y] = (img.getRGB(x, y) & 0x00ffffff) > 0 || (img.getRGB(x,y) & 0xff000000) == 0;
+				obstacleMap[x][y] = ((img.getRGB(x, y) & 0x00ffffff) > 0 || (img.getRGB(x,y) & 0xff000000) == 0);
 			}
 		}
 			
@@ -49,12 +47,21 @@ public class Map {
 	}
 	
 	public boolean isWall(Vector pos) {
-		pos = this.robotPos2ObstacleMap(pos);
+		Vector newp = this.robotPos2ObstacleMap(pos);
 		try {
-			return !obstacleMap[(int)pos.x()][(int)pos.y()];
+			return !obstacleMap[(int)newp.x()][(int)newp.y()];
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return true;
 		}
+	}
+	
+	public double apprDistToWall(Vector pos, double angle, double accuracy) {
+		Vector endPos = pos.getCopy();
+		Vector dr = new Vector(Math.cos(angle) * accuracy, Math.sin(angle) * accuracy);
+
+		while (!isWall(endPos.plus(dr)));
+		
+		return pos.distanceTo(endPos);
 	}
 	
 	/**
@@ -84,11 +91,11 @@ public class Map {
 	}
 	
 	public Vector obstacleMap2RobotPos(Vector obstaclePos) {
-		return new Vector(obstaclePos.x()/this.wallGridSquareLength, obstaclePos.y()/this.wallGridSquareLength);
+		return new Vector(obstaclePos.x()*this.wallGridSquareLength, obstaclePos.y()*this.wallGridSquareLength);
 	}
 	
 	public Vector robotPos2ObstacleMap(Vector robotPos) {
-		return new Vector(robotPos.x()*this.wallGridSquareLength, robotPos.y()*this.wallGridSquareLength);
+		return new Vector(robotPos.x()/this.wallGridSquareLength, robotPos.y()/this.wallGridSquareLength);
 	}
 	
 }
