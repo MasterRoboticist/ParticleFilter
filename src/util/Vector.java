@@ -32,6 +32,9 @@ public class Vector {
 		}
 		return this;
 	}
+	public Vector setComponents(Vector v) {
+		return setComponents(v.comps);
+	}
 	
 	/**
 	 * Adds the given vector to this vector.

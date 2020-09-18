@@ -26,7 +26,7 @@ public class SimPanel extends JPanel implements MouseListener, MouseMotionListen
 
 	public SimPanel(Simulation sim) {
 		setPreferredSize(new Dimension(width, height));
-		setFocusable(true);
+//		setFocusable(true);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		
@@ -110,7 +110,6 @@ public class SimPanel extends JPanel implements MouseListener, MouseMotionListen
 
 	// dragging robot stuff
 	private boolean isDragging = false;
-//	private final Point dragPos = new Point();
 	
 	private void setBotLoc(Robot r, Point pix) {
 		var tf = getTransform(lastLoc, lastSize);
@@ -122,11 +121,6 @@ public class SimPanel extends JPanel implements MouseListener, MouseMotionListen
 		r.setPosition(sim.getMap().pixel2RobotPos(pix));
 		repaint();
 	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) { }
-
-
 
 
 	@Override
@@ -141,40 +135,26 @@ public class SimPanel extends JPanel implements MouseListener, MouseMotionListen
 		}
 	}
 
-
-
-
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		isDragging = false;
 	}
-
-
-
-
-	@Override
-	public void mouseEntered(MouseEvent e) { }
-
-
-
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		isDragging = false;
 	}
 
-
-
-
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if (isDragging)
 			setBotLoc(sim.getRealRobot(), e.getPoint());
 	}
-
-
-
-
+	
+	@Override
+	public void mouseClicked(MouseEvent e) { }
+	@Override
+	public void mouseEntered(MouseEvent e) { }
 	@Override
 	public void mouseMoved(MouseEvent e) { }
 	

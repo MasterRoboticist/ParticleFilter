@@ -8,6 +8,7 @@ import robot.Robot;
 import robot.Sensor;
 import robot.Wheel;
 import util.Gaussian;
+import util.Util;
 import util.Vector;
 
 public class Simulation {
@@ -15,12 +16,11 @@ public class Simulation {
 	public int nbots;
 	public int moves = 1;
 	double rvel = 0, lvel = 0;
-	int rOn = 1, lOn = 1;  // can be 0(off), 1 (on), or -1 (reverse)
+	double rOn = 1, lOn = 1;  // modifier for rvel, lvel
 	int redistrStepSize = 2;
 	private double dt = 1; //seconds
 	int rescatterMin = 20; //minimum number of steps between rescatterings
 	int lastScatter = 0;
-	boolean keyControl = false;
 	
 	private Robot trueBot;
 	private ArrayList<Robot> simBots;
@@ -107,9 +107,8 @@ public class Simulation {
 	public void redistribute() {
 		double[] probabilities = calcWeights();
 //		System.out.println("Best Bot is " + indexOfBiggest(probabilities) +" with prob: " + most(probabilities));
-		double sumProbs = sum(probabilities);
 		
-		if(avg(probabilities) < .05 && moves > lastScatter + rescatterMin) {
+		if(Util.avg(probabilities) < .05 && moves > lastScatter + rescatterMin) {
 			System.out.println("rescattering");
 			scatter();
 			return;
@@ -122,6 +121,8 @@ public class Simulation {
 			angles[i] = simBots.get(i).angle;
 		}
 		
+		double sumProbs = Util.sum(probabilities);
+		
 		for(Robot bot: simBots) {
 			double rand = Math.random()*sumProbs;
 			double currSum = probabilities[0];
@@ -130,7 +131,7 @@ public class Simulation {
 				currBotNum++;
 				currSum += probabilities[currBotNum];
 			}
-			bot.position = coords[currBotNum].getCopy();
+			bot.position.setComponents(coords[currBotNum]);
 			bot.angle = angles[currBotNum];
 			
 //			System.out.print(currBotNum+",");
@@ -138,44 +139,6 @@ public class Simulation {
 //		System.out.println("");
 		
 	}
-	
-	private double least(double[] d) {
-		return d[indexOfSmallest(d)];
-	}
-
-
-
-	private int indexOfSmallest(double[] d) {
-		int smallestindex = 0;
-		double smallest = d[0];
-		for(int i = 0; i < d.length; i++) {
-			if(d[i] < smallest) {
-				smallestindex = i;
-				smallest = d[i];
-			}
-		}
-		return smallestindex;
-	}
-
-	
-	private double most(double[] d) {
-		return d[indexOfBiggest(d)];
-	}
-
-
-
-	private int indexOfBiggest(double[] d) {
-		int biggestindex = 0;
-		double biggest = d[0];
-		for(int i = 0; i < d.length; i++) {
-			if(d[i] > biggest) {
-				biggestindex = i;
-				biggest = d[i];
-			}
-		}
-		return biggestindex;
-	}
-
 
 
 	private double[] calcWeights() {
@@ -187,16 +150,23 @@ public class Simulation {
 		return probs;
 	}
 	
+	/**
+	 * Calculates the probability that the given readings are at least as bad as the given bot's readings
+	 * @param bot a simrobot
+	 * @param sensorReadings the real robot's readings
+	 * @return the probability
+	 */
 	private double calcWeight(Robot bot, double[] sensorReadings) {
-		double sum = 0;
+		double prod = 1;
 		for(int i = 0; i < sensorReadings.length; i++) {
-			sum += bot.sensors[i].distr.getProbability(sensorReadings[i], bot.getSensorReadings(i));
+			prod *= bot.sensors[i].distr.getProbability(sensorReadings[i], bot.getSensorReadings(i));
 		}
 		//Ensure has at least some chance of getting chosen, even if all probablities are 0
-		return 10*sum/(double)sensorReadings.length + 1;
-		
+//		return 10*prod / sensorReadings.length + 1; // this was when the probs were added
+		return prod;
 	}
 	
+	// this is unused
 	public double[][] readSensors() {
 		double[][] readings = new double[nbots][trueBot.sensors.length];
 		for(int i = 0; i < nbots; i++) {
@@ -214,34 +184,10 @@ public class Simulation {
 	public void moveIt(Robot r, double dt) {
 		Vector oldPos = r.position.getCopy();
 		
-		//if the robot is being controlled by keys, slow it down so it is easier to control when it is turning
-		double inputrvel, inputlvel;
-		if(keyControl && (rOn != lOn)) {
-			inputrvel = rvel/10;
-			inputlvel = lvel/10;
-		}
-		else {
-			inputrvel = rvel;
-			inputlvel = lvel;
-		}
-		
-		//move as normal
-		r.move(rOn*inputlvel, lOn*inputrvel, dt);
+		r.move(lOn*lvel, rOn*rvel, dt);
 		if(map.isWall(r.position)) {
 			r.setPosition(oldPos);
 		}
-	}
-	
-	public double sum(double[] list) {
-		double sum = 0;
-		for(double dbl: list) {
-			sum+= dbl;
-		}
-		return sum;
-	}
-	
-	public double avg(double[] list) {
-		return sum(list)/(double)list.length;
 	}
 	
 	public void summary(String option) {
@@ -284,14 +230,14 @@ public class Simulation {
 				for(int j = 0; j < simBots.get(i).sensors.length; j++) 
 					sensorReading[i][j] = simBots.get(i).getSensorReadings(j); 
 			}
-			System.out.println(String.format("	Average position: <%.1f, %.1f>", avg(xpos), avg(ypos)));
-			System.out.println(String.format("	Average angle: %.2f", avg(angle)));
-			System.out.println(String.format("	Average sensor 0 reading: %.3f", avg(sensorReading[0])));
-			System.out.println("	Average Similarity: " + avg(probabilities));
+			System.out.println(String.format("	Average position: <%.1f, %.1f>", Util.avg(xpos), Util.avg(ypos)));
+			System.out.println(String.format("	Average angle: %.2f", Util.avg(angle)));
+			System.out.println(String.format("	Average sensor 0 reading: %.3f", Util.avg(sensorReading[0])));
+			System.out.println("	Average Similarity: " + Util.avg(probabilities));
 			System.out.println("	--");
 			
 			System.out.println("Best Sim Robot: ");
-			int index = indexOfBiggest(probabilities);
+			int index = Util.indexOfBiggest(probabilities);
 			System.out.println("	Position: " + simBots.get(index).position.toString());
 			System.out.println("	Angle: " + simBots.get(index).angle);
 			System.out.println(String.format("	Sensor 0 Reading: %.03f", simBots.get(index).getSensorReadings(0)));
@@ -349,18 +295,13 @@ public class Simulation {
 	public void setRightWheelVel(double vel) {
 		rvel = vel;
 	}
-	public void setRightWheelOn(int on) {
+	
+	
+	public void setRightWheelOn(double on) {
 		rOn = on;
 	}
-	public void setLeftWheelOn(int on) {
+	public void setLeftWheelOn(double on) {
 		lOn = on;
-	}
-	public void setKeyControlOn() {
-		keyControl = true;
-	}
-	
-	public void setKeyControlOff() {
-		keyControl = false;
 	}
 	
 	public void setScatterStepSize(int n) {

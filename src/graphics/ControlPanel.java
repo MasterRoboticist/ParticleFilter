@@ -25,7 +25,7 @@ public class ControlPanel extends JPanel {
 		setLayout(new GridBagLayout());
 		
 		int fps = 30;
-		animator = new Timer(1000/fps, this::doPlay);
+		animator = new Timer(1000/fps, this::doStep);
 		
 		// make components
 		
@@ -75,9 +75,11 @@ public class ControlPanel extends JPanel {
 		JPanel metaPanel = new JPanel(new GridBagLayout());
 		JSlider dtSlider = new JSlider(1, 200, 100);
 		dtSlider.addChangeListener((e) -> app.sim.setDT(dtSlider.getValue() / 100.0));
+		dtSlider.setFocusable(false);
 		
 		JSlider fpsSlider = new JSlider(1, 60, fps);
 		fpsSlider.addChangeListener((e) -> setFPS(fpsSlider.getValue()));
+		fpsSlider.setFocusable(false);
 		
 		JCheckBox useKeysBox = new JCheckBox("Use arrow keys");
 		useKeysBox.addActionListener((e) -> app.setUseKeys(useKeysBox.isSelected()));
@@ -138,18 +140,8 @@ public class ControlPanel extends JPanel {
 	// Methods
 	
 	private void doStep(ActionEvent e) {
-		boolean keys = app.useKeys;
-		app.setUseKeys(false);
 		app.sim.step();
 		app.simPanel.repaint();
-		app.setUseKeys(keys);
-	}
-	
-	private void doPlay(ActionEvent e) {
-		if(!((app.sim.getLeftWheelVel() == 0 && app.sim.getRightWheelVel() == 0) || (app.useKeys && app.lefton == 0 && app.righton == 0))) {
-			app.sim.step();
-			app.simPanel.repaint();
-		}
 	}
 	
 	private void togglePlay(ActionEvent e) {

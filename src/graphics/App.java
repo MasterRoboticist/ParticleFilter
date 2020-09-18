@@ -2,8 +2,6 @@ package graphics;
 
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.AbstractAction;
@@ -16,6 +14,7 @@ import simulation.Simulation;
 import util.GBC;
 import util.ImageReader;
 
+@SuppressWarnings("serial")
 public class App {
 	
 	public static void main(String[] args) {
@@ -65,7 +64,6 @@ public class App {
 	final ControlPanel controlPanel;
 	
 	boolean useKeys = false;
-	int lefton, righton;
 	
 	
 	// methods
@@ -74,8 +72,8 @@ public class App {
 		useKeys = b;
 		handleDirs();
 		
-		//TODO make it play when a key is pressed and stop when key is released
-		if(b) controlPanel.play();
+//		TODO make it play when a key is pressed and stop when key is released
+		if (b) controlPanel.play();
 		else controlPanel.stop();
 	}
 	
@@ -84,10 +82,11 @@ public class App {
 	
 	private void addKeyBindings(JComponent comp) {
 		for (int i = 0; i < keys.length; i++)
-			addToggleMap(comp, keys[i], i);
+			addToggleMap(comp, i);
 	}
 	
-	private void addToggleMap(JComponent comp, String keyStroke, int toggledir) {
+	private void addToggleMap(JComponent comp, int toggledir) {
+		var keyStroke = keys[toggledir];
 		comp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(keyStroke), keyStroke + " on");
 		comp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("released " + keyStroke), keyStroke + " off");
 		comp.getActionMap().put(keyStroke + " on", new AbstractAction() {
@@ -108,35 +107,32 @@ public class App {
 	
 	private void handleDirs() {
 		if (!useKeys) {
-			sim.setKeyControlOff();
 			sim.setLeftWheelOn(1);
 			sim.setRightWheelOn(1);
 			return;
 		}
-		else sim.setKeyControlOn();
 		
-		lefton = 0;
-		righton = 0;
+		double lefton = 0;
+		double righton = 0;
+		
+		double turnspd = .3;
 		
 		if (dirs[0]) {
-			lefton -= 1;
-			righton += 1;
+			lefton -= turnspd;
+			righton += turnspd;
 		}
 		if (dirs[1]) {
 			lefton++;
 			righton++;
 		}
 		if (dirs[2]) {
-			lefton += 1;
-			righton -= 1;
+			lefton += turnspd;
+			righton -= turnspd;
 		}
 		if (dirs[3]) {
 			lefton--;
 			righton--;
 		}
-		
-		lefton = (int) Math.signum(lefton);
-		righton = (int) Math.signum(righton);
 				
 		sim.setLeftWheelOn(lefton);
 		sim.setRightWheelOn(righton);

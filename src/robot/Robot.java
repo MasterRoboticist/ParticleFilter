@@ -3,21 +3,17 @@ package robot;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 import util.ImageReader;
 import util.Vector;
 
 public class Robot {
-	public Vector position;
+	public final Vector position;
 	public double angle; // in rad
 	public Chassis chassis;
 	public Sensor[] sensors;
-	public double[] sensorReadings;
-	Vector lastPos;
+	public final double[] sensorReadings = null;
+	final Vector lastPos = new Vector();
 	double lastAngle;
 	static int numSpriteRotations = 100;
 	
@@ -46,7 +42,7 @@ public class Robot {
 		for(int i = 0; i < numSpriteRotations; i++) {
 			simSprites[i] = makeRotated(origSim, i, simSpriteAngle);
 			trueSprites[i] = makeRotated(origTrue, i, trueSpriteAngle);
-			System.out.println("made sprite " + i);
+//			System.out.println("made sprite " + i);
 		}
 	}
 	
@@ -74,7 +70,7 @@ public class Robot {
 		position.plus(new Vector(changeInPos[0], changeInPos[1]).rotate(angle));
 		if(sensors[0].map.isWall(position)) {
 			double maxPosChange = sensors[0].map.apprDistToWall(position, angle, .3);
-			position = oldPos.plus(new Vector(maxPosChange*Math.cos(angle), maxPosChange*Math.sin(angle)));
+			position.setComponents(oldPos).plus(new Vector(maxPosChange*Math.cos(angle), maxPosChange*Math.sin(angle)));
 		}
 		angle += changeInPos[2];
 		while (angle < 0) angle += 2*Math.PI;
@@ -112,11 +108,11 @@ public class Robot {
 	
 	public double getSensorReadings(int sensornum) {
 		if(sensorReadings == null || !(lastPos.equals(position) && angle == lastAngle)) {
-			lastPos = position.getCopy();
+			lastPos.setComponents(position);
 			lastAngle = angle;
 			return sensors[sensornum].read(position, angle);
-		}
-		else return sensorReadings[sensornum];
+		} else 
+			return sensorReadings[sensornum];
 	}
 	
 	public double[] getAllSensorReadings() {
