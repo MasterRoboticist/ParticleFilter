@@ -27,7 +27,7 @@ public class SimPanel extends JPanel {
 		this.sim = sim;
 	}
 	
-	private boolean lazyDraw = true; // controls whether simbots are drawn as images or points
+	private boolean lazyDraw = false; // controls whether simbots are drawn as images or points
 	private final Simulation sim;
 	
 	@Override
@@ -36,16 +36,13 @@ public class SimPanel extends JPanel {
 		Point loc = new Point();
 		Dimension size = getSize();
 		
-		Robot[] allBots = new Robot[sim.getNumSimBots() + 1];
-		sim.getSimRobots().toArray(allBots);
-		allBots[allBots.length-1] =  sim.getRealRobot();
-		
 		renderMapAt(g2, loc, size);
-		renderRobotsAt(g2, loc, size, new ArrayIter<>(sim.getRealRobot()));
 		if (lazyDraw) {
+			renderRobotsAt(g2, loc, size, new ArrayIter<>(sim.getRealRobot()));
 			lazyRenderRobotsAt(g2, loc, size, sim.getSimRobots());
 		} else {
 			renderRobotsAt(g2, loc, size, sim.getSimRobots());
+			renderRobotsAt(g2, loc, size, new ArrayIter<>(sim.getRealRobot()));
 		}
 	}
 	
@@ -79,14 +76,16 @@ public class SimPanel extends JPanel {
 		for (Robot bot : bots) {
 			Point botloc = sim.getMap().robotPos2Pixel(bot.position);
 			BufferedImage sprite = bot.getSprite();
-			double spriteOrientation = 3*Math.PI/2;
-			AffineTransform tx = AffineTransform.getRotateInstance(bot.angle + spriteOrientation, sprite.getWidth()/2, sprite.getHeight()/2);
-			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-			var rotatedSprite = op.filter(sprite, null);
-			double desiredBotSize = size.getWidth() / 40.0; // not quite right name
-			double scale = 1.0 * sprite.getWidth() / sim.getMap().img.getWidth() * desiredBotSize;
-			g.drawImage(rotatedSprite, new AffineTransform(1/scale, 0, 0, 1/scale, botloc.x - rotatedSprite.getWidth()/scale/2, botloc.y - rotatedSprite.getHeight()/scale/2), null);
+			
+			double desiredBotSize = sim.getSpriteWidth() / 10.0; // not quite right name
+			double scale = 1.0 * sim.getSpriteWidth() / sim.getMap().img.getWidth() * desiredBotSize;
+			g.drawImage(sprite, new AffineTransform(1/scale, 0, 0, 1/scale, botloc.x - sprite.getWidth()/scale/2, botloc.y - sprite.getHeight()/scale/2), null);
+		
 		}
+	}
+	
+	public void setLazyDraw(Boolean b) {
+		lazyDraw = b;
 	}
 	
 }

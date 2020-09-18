@@ -20,11 +20,12 @@ public class Simulation {
 	private double dt = 1; //seconds
 	int rescatterMin = 20; //minimum number of steps between rescatterings
 	int lastScatter = 0;
+	boolean keyControl = false;
 	
 	private Robot trueBot;
 	private ArrayList<Robot> simBots;
 	
-	public static final Gaussian realWheelDistrib = new Gaussian(0, 0.0001);
+	public static final Gaussian realWheelDistrib = new Gaussian(0, .5);
 	public static final Gaussian fakeWheelDistrib = new Gaussian(0, 2);
 	public static final Gaussian realSensorDistr = new Gaussian(0, 5);
 	public static final Gaussian fakeSensorDistr = new Gaussian(0, 10);
@@ -39,6 +40,8 @@ public class Simulation {
 	
 	
 	public Simulation(int nbots, Map map) {
+		Robot.loadSprites();
+		
 		simBots = new ArrayList<>(nbots);
 		this.nbots = nbots;
 		this.map = map;
@@ -137,7 +140,6 @@ public class Simulation {
 	}
 	
 	private double least(double[] d) {
-		// TODO Auto-generated method stub
 		return d[indexOfSmallest(d)];
 	}
 
@@ -157,7 +159,6 @@ public class Simulation {
 
 	
 	private double most(double[] d) {
-		// TODO Auto-generated method stub
 		return d[indexOfBiggest(d)];
 	}
 
@@ -212,7 +213,20 @@ public class Simulation {
 	
 	public void moveIt(Robot r, double dt) {
 		Vector oldPos = r.position.getCopy();
-		r.move(lOn * lvel, rOn * rvel, dt);
+		
+		//if the robot is being controlled by keys, slow it down so it is easier to control when it is turning
+		double inputrvel, inputlvel;
+		if(keyControl && (rOn != lOn)) {
+			inputrvel = rvel/10;
+			inputlvel = lvel/10;
+		}
+		else {
+			inputrvel = rvel;
+			inputlvel = lvel;
+		}
+		
+		//move as normal
+		r.move(rOn*inputlvel, lOn*inputrvel, dt);
 		if(map.isWall(r.position)) {
 			r.setPosition(oldPos);
 		}
@@ -293,6 +307,7 @@ public class Simulation {
 		return nbots;
 	}
 	public void setNumSimBots(int num) {
+		System.out.println("Current: " + nbots + " going to: " + num);
 		nbots = num;
 		//remove robots if the number of bots has decreased
 		while(simBots.size() > nbots) {
@@ -340,6 +355,13 @@ public class Simulation {
 	public void setLeftWheelOn(int on) {
 		lOn = on;
 	}
+	public void setKeyControlOn() {
+		keyControl = true;
+	}
+	
+	public void setKeyControlOff() {
+		keyControl = false;
+	}
 	
 	public void setScatterStepSize(int n) {
 		redistrStepSize = n;
@@ -351,6 +373,22 @@ public class Simulation {
 	
 	public void setDT(double dt) {
 		this.dt = dt;
+	}
+	public double getLeftWheelVel() {
+		return lvel;
+	}
+	
+	/**
+	 * Sets the velocity of the right wheel, in robot units.
+	 * @param vel ya
+	 */
+	public double getRightWheelVel() {
+		return rvel;
+	}
+
+
+	public double getSpriteWidth() {
+		return Robot.getSpriteWidth();
 	}
 
 }

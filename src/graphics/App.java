@@ -31,7 +31,7 @@ public class App {
 		frame.setLayout(new GridBagLayout());
 		
 		// make simulation stuff
-		BufferedImage mapImage = ImageReader.readImage("logo.jpg");
+		BufferedImage mapImage = ImageReader.readImage("EndSlide.jpg");
 		
 		int robotGridWidth = 1000;
 		int nbots = 1000;
@@ -64,7 +64,8 @@ public class App {
 	final SimPanel simPanel;
 	final ControlPanel controlPanel;
 	
-	private boolean useKeys = false;
+	boolean useKeys = false;
+	int lefton, righton;
 	
 	
 	// methods
@@ -72,6 +73,10 @@ public class App {
 	public void setUseKeys(boolean b) {
 		useKeys = b;
 		handleDirs();
+		
+		//TODO make it play when a key is pressed and stop when key is released
+		if(b) controlPanel.play();
+		else controlPanel.stop();
 	}
 	
 	private final String[] keys = {"LEFT", "UP", "RIGHT", "DOWN"};
@@ -103,24 +108,27 @@ public class App {
 	
 	private void handleDirs() {
 		if (!useKeys) {
+			sim.setKeyControlOff();
 			sim.setLeftWheelOn(1);
 			sim.setRightWheelOn(1);
 			return;
 		}
-		int lefton = 0;
-		int righton = 0;
+		else sim.setKeyControlOn();
+		
+		lefton = 0;
+		righton = 0;
 		
 		if (dirs[0]) {
-			lefton--;
-			righton++;
+			lefton -= 1;
+			righton += 1;
 		}
 		if (dirs[1]) {
 			lefton++;
 			righton++;
 		}
 		if (dirs[2]) {
-			lefton++;
-			righton--;
+			lefton += 1;
+			righton -= 1;
 		}
 		if (dirs[3]) {
 			lefton--;
@@ -133,4 +141,10 @@ public class App {
 		sim.setLeftWheelOn(lefton);
 		sim.setRightWheelOn(righton);
 	}
+
+	public void setPointSimBots(boolean b) {
+		simPanel.setLazyDraw(b);
+		simPanel.repaint();
+	}
+
 }
