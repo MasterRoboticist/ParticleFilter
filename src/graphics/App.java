@@ -30,7 +30,7 @@ public class App {
 		frame.setLayout(new GridBagLayout());
 		
 		// make simulation stuff
-		BufferedImage mapImage = ImageReader.readImage("EndSlide.jpg");
+		BufferedImage mapImage = ImageReader.readImage("map.jpg");
 		
 		int robotGridWidth = 1000;
 		int nbots = 1000;
@@ -105,6 +105,8 @@ public class App {
 		});
 	}
 	
+	double lefton;
+	double righton;
 	private void handleDirs() {
 		if (!useKeys) {
 			sim.setLeftWheelOn(1);
@@ -112,10 +114,10 @@ public class App {
 			return;
 		}
 		
-		double lefton = 0;
-		double righton = 0;
+		lefton = 0;
+		righton = 0;
 		
-		double turnspd = .3;
+		double turnspd = .2;
 		
 		if (dirs[0]) {
 			lefton -= turnspd;

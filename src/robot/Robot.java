@@ -98,14 +98,6 @@ public class Robot {
 		return position.comps[1];
 	}
 	
-	/* for graphics */
-	public double getSensorReading() {
-		if(sensors.length > 1) {
-			System.out.println("Warning: Calling 'getSensorReading()' is ambiguous.  Multiple sensors available.");
-		}
-		return getSensorReadings(0);
-	}
-	
 	public double getSensorReadings(int sensornum) {
 		if(sensorReadings == null || !(lastPos.equals(position) && angle == lastAngle)) {
 			lastPos.setComponents(position);

@@ -108,8 +108,8 @@ public class Simulation {
 		double[] probabilities = calcWeights();
 //		System.out.println("Best Bot is " + indexOfBiggest(probabilities) +" with prob: " + most(probabilities));
 		
-		if(Util.avg(probabilities) < .05 && moves > lastScatter + rescatterMin) {
-			System.out.println("rescattering");
+		if(Util.avg(probabilities) < .01 && moves > lastScatter + rescatterMin) {
+			System.out.println("rescattering, avg: " + Util.avg(probabilities));
 			scatter();
 			return;
 		}
@@ -159,11 +159,11 @@ public class Simulation {
 	private double calcWeight(Robot bot, double[] sensorReadings) {
 		double prod = 1;
 		for(int i = 0; i < sensorReadings.length; i++) {
-			prod *= bot.sensors[i].distr.getProbability(sensorReadings[i], bot.getSensorReadings(i));
+			prod *= bot.sensors[i].distr.getProbability(sensorReadings[i], bot.getSensorReadings(i))+.01;
 		}
 		//Ensure has at least some chance of getting chosen, even if all probablities are 0
 //		return 10*prod / sensorReadings.length + 1; // this was when the probs were added
-		return prod;
+		return Math.pow(prod, 1/(double)bot.sensors.length);
 	}
 	
 	// this is unused
@@ -205,7 +205,7 @@ public class Simulation {
 				Robot bot = simBots.get(i);
 				System.out.println("	Position: " + bot.position.toString());
 				System.out.println(String.format("	Angle: %.2f", bot.angle));
-				System.out.println(String.format("	Sensor 0 Reading: %.3f", bot.getSensorReading()));
+				System.out.println(String.format("	Sensor 0 Reading: %.3f", bot.getSensorReadings(0)));
 				System.out.println("	Similarity: " + probabilities[i]);
 				System.out.println("	--");
 			}

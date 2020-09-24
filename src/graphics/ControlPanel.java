@@ -140,8 +140,10 @@ public class ControlPanel extends JPanel {
 	// Methods
 	
 	private void doStep(ActionEvent e) {
-		app.sim.step();
-		app.simPanel.repaint();
+		if(!((app.sim.getLeftWheelVel() == 0 && app.sim.getRightWheelVel() == 0) || (app.useKeys && app.lefton == 0 && app.righton == 0))) {
+			app.sim.step();
+			app.simPanel.repaint();
+		}
 	}
 	
 	private void togglePlay(ActionEvent e) {

@@ -72,7 +72,7 @@ public class SimPanel extends JPanel implements MouseListener, MouseMotionListen
 		g = (Graphics2D) g.create();
 		g.transform(getTransform(loc, size));
 		g.setColor(Color.GRAY);
-		int diam = 9;
+		int diam = 15;
 		for (Robot bot : bots) {
 			Point botloc = sim.getMap().robotPos2Pixel(bot.position);
 			g.fillOval(botloc.x - diam/2, botloc.y - diam/2, diam, diam);
