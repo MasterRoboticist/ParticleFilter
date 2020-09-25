@@ -34,7 +34,7 @@ public class Simulation {
 	Map map;
 	Wheel[] realWheels = {new Wheel(realWheelDistrib, -wheelDist/2, 0), new Wheel(realWheelDistrib, wheelDist/2, 0)};
 	Wheel[] fakeWheels = {new Wheel(fakeWheelDistrib, -wheelDist/2, 0), new Wheel(fakeWheelDistrib, wheelDist/2, 0)};
-	double[] irSensorAngles = {0,Math.PI/8,Math.PI/4, Math.PI*3/4, Math.PI/2, -Math.PI/8, -Math.PI/4, -Math.PI*3/4, -Math.PI/2};
+	double[] irSensorAngles = {0};//{0,Math.PI/8,Math.PI/4, Math.PI*3/4, Math.PI/2, -Math.PI/8, -Math.PI/4, -Math.PI*3/4, -Math.PI/2};
 	Sensor[] realSensors = new Sensor[irSensorAngles.length];
 	Sensor[] fakeSensors = new Sensor[irSensorAngles.length];
 	
@@ -122,17 +122,24 @@ public class Simulation {
 		}
 		
 		double sumProbs = Util.sum(probabilities);
+		double avgProbs = Util.avg(probabilities);
+		System.out.println(avgProbs);
 		
 		for(Robot bot: simBots) {
-			double rand = Math.random()*sumProbs;
-			double currSum = probabilities[0];
-			int currBotNum = 0;
-			while(currSum < rand) {
-				currBotNum++;
-				currSum += probabilities[currBotNum];
+			if(Math.random()<(.05-avgProbs<0 ? 0 : .05-avgProbs)) {
+				randomizeLocation(bot);
 			}
-			bot.position.setComponents(coords[currBotNum]);
-			bot.angle = angles[currBotNum];
+			else {
+				double rand = Math.random()*sumProbs;
+				double currSum = probabilities[0];
+				int currBotNum = 0;
+				while(currSum < rand) {
+					currBotNum++;
+					currSum += probabilities[currBotNum];
+				}
+				bot.position.setComponents(coords[currBotNum]);
+				bot.angle = angles[currBotNum];
+			}
 			
 //			System.out.print(currBotNum+",");
 		}

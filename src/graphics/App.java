@@ -3,6 +3,7 @@ package graphics;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -18,6 +19,12 @@ import util.ImageReader;
 public class App {
 	
 	public static void main(String[] args) {
+		//Makes Jar file include images
+		File f = new File(System.getProperty("user.dir"));
+        f = f.getParentFile();
+        String dir = f.toString();
+        System.setProperty("user.dir", dir);
+		
 		new App();
 	}
 	
@@ -31,9 +38,11 @@ public class App {
 		
 		// make simulation stuff
 		BufferedImage mapImage = ImageReader.readImage("map.jpg");
+//		BufferedImage mapImage = ImageReader.readImage("white1000x1000.png");
+
 		
 		int robotGridWidth = 1000;
-		int nbots = 1000;
+		int nbots = 2000;
 		
 		map = new Map(mapImage.getWidth(), mapImage.getHeight(), robotGridWidth, mapImage);
 		sim = new Simulation(nbots, map);
