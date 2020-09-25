@@ -37,7 +37,7 @@ public class App {
 		frame.setLayout(new GridBagLayout());
 		
 		// make simulation stuff
-		BufferedImage mapImage = ImageReader.readImage("map.jpg");
+		BufferedImage mapImage = ImageReader.readImage("resources/map.jpg");
 //		BufferedImage mapImage = ImageReader.readImage("white1000x1000.png");
 
 		

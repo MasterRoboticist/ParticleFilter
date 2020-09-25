@@ -17,9 +17,9 @@ public class Robot {
 	double lastAngle;
 	static int numSpriteRotations = 100;
 	
-	static String simSpriteName = "rollerRobotStanding";
+	static String simSpriteName = "resources/rollerRobotStanding";
 	static String simSpriteType = ".png";
-	static String trueSpriteName = "rollerRobotStandingRed";
+	static String trueSpriteName = "resources/rollerRobotStandingRed";
 	static String trueSpriteType = ".png";
 	static double trueSpriteAngle = 3*Math.PI/2;
 	static double simSpriteAngle = 3*Math.PI/2;
