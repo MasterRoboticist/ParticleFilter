@@ -9,4 +9,4 @@ Feel free to clone this repository and change the code.  We'll try to keep thing
 
 
 <h3> Bugs? </h3>
-If you have any problems openning the jars, or find any bugs in the app, please let us know! We will try our best to fix them if we can.  If you have any ideas for improvements, also feel free to let us know. We may decide to implement it!
+If you have any problems opening the jars, or find any bugs in the app, please let us know! We will try our best to fix them if we can.  If you have any ideas for improvements, also feel free to let us know. We may decide to implement it!
