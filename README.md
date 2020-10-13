@@ -9,7 +9,7 @@ If you decide not to download java from that link, be very careful to download a
 <br><br>
 
 <h3> Cloning the repo </h3>
-Feel free to clone this repository and change the code.  We'll try to keep things commented, but I'm not making any promises on that front... <br>
+Feel free to clone this repository and change the code.  We'll try to keep things commented and easy to read <br>
 You can also run the code this way even if you never want to change the code. In fact, it's the only way you can be gauranteed to have the latest version. You will need to download a Java IDE (i.e. Eclipse) if you don't already have one and figure out how to clone a git repo (i.e. this). Though I encourage new coders to try this, I don't recommend it because it requires some work on your part to figure everything out. Google is your best friend.
 <br><br>
 
